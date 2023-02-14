@@ -1,5 +1,11 @@
+from typing import Any
+
+
 class ExpectedGotException(Exception):
-    def __init__(self, expected, got):
+    expected: Any
+    got: Any
+
+    def __init__(self, expected: Any, got: Any):
         super().__init__(f'Expected {expected}, got {got}')
 
         self.expected = expected

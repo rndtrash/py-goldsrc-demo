@@ -13,3 +13,4 @@ if __name__ == '__main__':
 
     with open(os.path.abspath(args.filename), 'rb') as f:
         demo = CS16DemoParser(BytesIO(f.read()))
+        print(demo)
