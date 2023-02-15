@@ -8,6 +8,7 @@ from hl1demo.exceptions import InvalidMagicException, InvalidDemoProtocolExcepti
     InvalidModException
 from hl1demo.macros import BaseMacro, InvalidMacroException
 from hl1demo.macros.empty_macros import FinalMacro, FirstMacro
+from hl1demo.macros.base import FullFrameMacro, ClientDataMacro
 from hl1demo.utils import unpack_le, read_binary_string
 
 
@@ -84,18 +85,21 @@ class BaseDemoParser:
             self.directories.append(BaseDemoParser.Directory.from_stream(self.binary_stream))
 
         for directory in self.directories:
+            # TODO: DEBUG
+            print(f'Directory \"{directory}\"')
+
             self.binary_stream.seek(directory.offset)
 
-            # macro = BaseMacro.from_stream(self.binary_stream)
-            # last_macro = self.get_macro_by_id(macro)
-            # if last_macro is not FirstMacro:
-            #     raise BaseDemoParser.MalformedDirectoryException(directory)
-            # directory.macros.append(last_macro)
             last_macro = None
-            while last_macro is not FinalMacro:
+            while not isinstance(last_macro, FinalMacro):
                 macro = BaseMacro.from_stream(self.binary_stream)
                 last_macro = self.get_macro_by_id(macro)
                 directory.macros.append(last_macro)
+
+                # TODO: DEBUG
+                # print(last_macro)
+            print(len(directory.macros))
+            print(directory.length == len(directory.macros))
 
     def __del__(self):
         self.binary_stream.close()
@@ -105,8 +109,12 @@ class BaseDemoParser:
 
     def get_macro_by_id(self, base_macro: BaseMacro) -> BaseMacro:
         match base_macro.type:
+            case 0 | 1:
+                return FullFrameMacro.from_base_macro(base_macro, self.binary_stream)
             case 2:
                 return FirstMacro.from_base_macro(base_macro, self.binary_stream)
+            case 4:
+                return ClientDataMacro.from_base_macro(base_macro, self.binary_stream)
             case 5:
                 return FinalMacro.from_base_macro(base_macro, self.binary_stream)
         raise InvalidMacroException(base_macro)

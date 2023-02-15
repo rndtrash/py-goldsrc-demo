@@ -12,6 +12,11 @@ class BaseMacro:
     time: float
     frame: int
 
+    def __str__(self):
+        return 'BaseMacro(' \
+               f'type: {self.type}, time: {self.time}, frame: {self.frame},' \
+               ')'
+
     @staticmethod
     def from_stream(binary_stream: BytesIO):
         frame_type, time, frame = unpack_le('BfI', binary_stream.read(1 + 4 + 4))
