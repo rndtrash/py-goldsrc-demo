@@ -4,7 +4,7 @@ import os
 import argparse
 from io import BytesIO
 
-from hl1demo.CS16DemoParser import CS16DemoParser
+from hl1demo.parse_demo import parse_demo
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -12,5 +12,5 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     with open(os.path.abspath(args.filename), 'rb') as f:
-        demo = CS16DemoParser(BytesIO(f.read()))
+        demo = parse_demo(BytesIO(f.read()))
         print(demo)

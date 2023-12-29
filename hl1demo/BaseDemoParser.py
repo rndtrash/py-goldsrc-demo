@@ -8,7 +8,8 @@ from hl1demo.exceptions import InvalidMagicException, InvalidDemoProtocolExcepti
     InvalidModException
 from hl1demo.macros import BaseMacro, InvalidMacroException
 from hl1demo.macros.empty_macros import FinalMacro, FirstMacro
-from hl1demo.macros.base import FullFrameMacro, ClientDataMacro
+from hl1demo.macros.base import ClientDataMacro
+from hl1demo.macros.netmsg import NetMsgMacro
 from hl1demo.utils import unpack_le, read_binary_string
 
 DEMO_MAGIC = bytes([0x48, 0x4C, 0x44, 0x45, 0x4D, 0x4F, 0x00, 0x00])  # "HLDEMO  "
@@ -110,7 +111,7 @@ class BaseDemoParser:
     def get_macro_by_id(self, base_macro: BaseMacro) -> BaseMacro:
         match base_macro.type:
             case 0 | 1:
-                return FullFrameMacro.from_base_macro(base_macro, self.binary_stream)
+                return NetMsgMacro.from_base_macro(base_macro, self.binary_stream)
             case 2:
                 return FirstMacro.from_base_macro(base_macro, self.binary_stream)
             case 4:
