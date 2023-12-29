@@ -11,6 +11,8 @@ from hl1demo.macros.empty_macros import FinalMacro, FirstMacro
 from hl1demo.macros.base import FullFrameMacro, ClientDataMacro
 from hl1demo.utils import unpack_le, read_binary_string
 
+DEMO_MAGIC = bytes([0x48, 0x4C, 0x44, 0x45, 0x4D, 0x4F, 0x00, 0x00])  # "HLDEMO  "
+
 
 class BaseDemoParser:
     @dataclass
@@ -54,22 +56,20 @@ class BaseDemoParser:
 
     directories: List[Directory]
 
-    MAGIC = bytes([0x48, 0x4C, 0x44, 0x45, 0x4D, 0x4F, 0x00, 0x00])  # "HLDEMO  "
-
     def __init__(self, bs: BytesIO, demo_protocol_target: int, net_protocol_target: int, mod_name_target: str):
         self.binary_stream = bs
 
         bs.seek(0)
 
-        magic = bs.read(len(BaseDemoParser.MAGIC))
-        if magic != BaseDemoParser.MAGIC:
-            raise InvalidMagicException(BaseDemoParser.MAGIC, magic)
+        magic = bs.read(len(DEMO_MAGIC))
+        if magic != DEMO_MAGIC:
+            raise InvalidMagicException(DEMO_MAGIC, magic)
 
         self.demo_protocol, self.net_protocol = self.unpack('II', 4 + 4)
         if self.demo_protocol != demo_protocol_target:
             raise InvalidDemoProtocolException(demo_protocol_target, self.demo_protocol)
         if self.net_protocol != net_protocol_target:
-            raise InvalidNetProtocolException(demo_protocol_target, self.demo_protocol)
+            raise InvalidNetProtocolException(net_protocol_target, self.net_protocol)
 
         self.map_name = read_binary_string(self.binary_stream, 260)
         self.mod_name = read_binary_string(self.binary_stream, 260)
