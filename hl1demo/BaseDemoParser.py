@@ -8,8 +8,8 @@ from hl1demo.exceptions import InvalidMagicException, InvalidDemoProtocolExcepti
     InvalidModException
 from hl1demo.macros import BaseMacro, InvalidMacroException
 from hl1demo.macros.empty_macros import FinalMacro, FirstMacro
-from hl1demo.macros.base import ClientDataMacro
-from hl1demo.macros.netmsg import NetMsgMacro
+from hl1demo.macros.base import ClientDataMacro, NetMsgMacro, DemoBufferMacro, ConsoleCommandMacro, WeaponAnimMacro, \
+    EventMacro, SoundMacro
 from hl1demo.utils import unpack_le, read_binary_string
 
 DEMO_MAGIC = bytes([0x48, 0x4C, 0x44, 0x45, 0x4D, 0x4F, 0x00, 0x00])  # "HLDEMO  "
@@ -57,6 +57,16 @@ class BaseDemoParser:
 
     directories: List[Directory]
 
+    def __str__(self):
+        return ('BaseDemoParser('
+                f'demo_protocol: {self.demo_protocol}, '
+                f'net_protocol: {self.demo_protocol}, '
+                f'map_name: {self.map_name}, '
+                f'mod_name: {self.mod_name}, '
+                f'map_crc: {self.map_crc}, '
+                f'directories: {self.directories}'
+                ')')
+
     def __init__(self, bs: BytesIO, demo_protocol_target: int, net_protocol_target: int, mod_name_target: str):
         self.binary_stream = bs
 
@@ -97,11 +107,6 @@ class BaseDemoParser:
                 last_macro = self.get_macro_by_id(macro)
                 directory.macros.append(last_macro)
 
-                # TODO: DEBUG
-                # print(last_macro)
-            print(len(directory.macros))
-            print(directory.length == len(directory.macros))
-
     def __del__(self):
         self.binary_stream.close()
 
@@ -114,8 +119,18 @@ class BaseDemoParser:
                 return NetMsgMacro.from_base_macro(base_macro, self.binary_stream)
             case 2:
                 return FirstMacro.from_base_macro(base_macro, self.binary_stream)
+            case 3:
+                return ConsoleCommandMacro.from_base_macro(base_macro, self.binary_stream)
             case 4:
                 return ClientDataMacro.from_base_macro(base_macro, self.binary_stream)
             case 5:
                 return FinalMacro.from_base_macro(base_macro, self.binary_stream)
+            case 6:
+                return EventMacro.from_base_macro(base_macro, self.binary_stream)
+            case 7:
+                return WeaponAnimMacro.from_base_macro(base_macro, self.binary_stream)
+            case 8:
+                return SoundMacro.from_base_macro(base_macro, self.binary_stream)
+            case 9:
+                return DemoBufferMacro.from_base_macro(base_macro, self.binary_stream)
         raise InvalidMacroException(base_macro)

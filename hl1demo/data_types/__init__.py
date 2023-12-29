@@ -344,7 +344,7 @@ class NetMsgInfo:
 
     def __str__(self):
         return 'NetMsgInfo(' \
-               f'timestamp: {self.timestamp}' \
+               f'timestamp: {self.timestamp}, ' \
                f'ref_params: {self.ref_params}, ' \
                f'user_cmd: {self.user_cmd}, ' \
                f'move_vars: {self.move_vars}, ' \
@@ -373,12 +373,11 @@ class NetMsg:
     outgoing_sequence: int
     reliable_sequence: int
     last_reliable_sequence: int
-    msg_length: int
     msg: bytes
 
     def __str__(self):
         return 'NetMsg(' \
-               f'net_msg_info: {self.net_msg_info}' \
+               f'net_msg_info: {self.net_msg_info}, ' \
                f'incoming_sequence: {self.incoming_sequence}, ' \
                f'incoming_acknowledged: {self.incoming_acknowledged}, ' \
                f'incoming_reliable_acknowledged: {self.incoming_reliable_acknowledged}, ' \
@@ -386,7 +385,6 @@ class NetMsg:
                f'outgoing_sequence: {self.outgoing_sequence}, ' \
                f'reliable_sequence: {self.reliable_sequence}, ' \
                f'last_reliable_sequence: {self.last_reliable_sequence}, ' \
-               f'msg_length: {self.msg_length}, ' \
                f'msg: {self.msg}' \
                ')'
 
@@ -410,8 +408,118 @@ class NetMsg:
                       outgoing_sequence,
                       reliable_sequence,
                       last_reliable_sequence,
-                      msg_length,
                       msg)
+
+
+@dataclass
+class Sound:
+    channel: int
+    sample: bytes
+    attenuation: float
+    volume: float
+    flags: int
+    pitch: int
+
+    def __str__(self):
+        return 'Sound(' \
+               f'channel: {self.channel}, ' \
+               f'sample: {self.sample}, ' \
+               f'attenuation: {self.attenuation}, ' \
+               f'volume: {self.volume}, ' \
+               f'flags: {self.flags}, ' \
+               f'pitch: {self.pitch}' \
+               ')'
+
+    @staticmethod
+    def from_stream(binary_stream: BytesIO):
+        channel, sample_length = unpack_le('ii', binary_stream.read(4 * 2))
+        sample = binary_stream.read(sample_length)
+        attenuation, volume, flags, pitch = unpack_le('ffii', binary_stream.read(4 * 4))
+
+        return Sound(channel,
+                     sample,
+                     attenuation,
+                     volume,
+                     flags,
+                     pitch)
+
+
+@dataclass
+class EventArgs:
+    flags: int
+    entity_index: int
+    origin: Vector3
+    angles: Rotation
+    velocity: Vector3
+    ducking: int
+    fparam1: float
+    fparam2: float
+    iparam1: int
+    iparam2: int
+    bparam1: int
+    bparam2: int
+
+    def __str__(self):
+        return 'EventArgs(' \
+               f'flags: {self.flags}, ' \
+               f'entity_index: {self.entity_index}, ' \
+               f'origin: {self.origin}, ' \
+               f'angles: {self.angles}, ' \
+               f'velocity: {self.velocity}, ' \
+               f'ducking: {self.ducking}, ' \
+               f'fparam1: {self.fparam1}, ' \
+               f'fparam2: {self.fparam2}, ' \
+               f'iparam1: {self.iparam1}, ' \
+               f'iparam2: {self.iparam2}, ' \
+               f'bparam1: {self.bparam1}, ' \
+               f'bparam2: {self.bparam2}' \
+               ')'
+
+    @staticmethod
+    def from_stream(binary_stream: BytesIO):
+        flags, entity_index = unpack_le('ii', binary_stream.read(4 * 2))
+        origin = Vector3.from_stream(binary_stream)
+        angles = Rotation.from_stream(binary_stream)
+        velocity = Vector3.from_stream(binary_stream)
+        ducking, fparam1, fparam2, iparam1, iparam2, bparam1, bparam2 \
+            = unpack_le('iffiiii', binary_stream.read(4 * 7))
+        return EventArgs(
+            flags,
+            entity_index,
+            origin,
+            angles,
+            velocity,
+            ducking,
+            fparam1,
+            fparam2,
+            iparam1,
+            iparam2,
+            bparam1,
+            bparam2
+        )
+
+
+@dataclass
+class Event:
+    flags: int
+    index: int
+    delay: float
+    args: EventArgs
+
+    def __str__(self):
+        return 'Event(' \
+               f'flags: {self.flags}, ' \
+               f'index: {self.index}, ' \
+               f'delay: {self.delay}, ' \
+               f'args: {self.args}' \
+               ')'
+
+    @staticmethod
+    def from_stream(binary_stream: BytesIO):
+        flags, index, delay = unpack_le('iif', binary_stream.read(4 * 3))
+        args = EventArgs.from_stream(binary_stream)
+
+        return Event(flags, index, delay, args)
 
 
 @dataclass
