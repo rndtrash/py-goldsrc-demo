@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 from io import BytesIO
 
-import hl1demo
-from hl1demo.macros import BaseMacro
+import py_goldsrc_demo
+from py_goldsrc_demo.macros import BaseMacro
 
 
 @dataclass

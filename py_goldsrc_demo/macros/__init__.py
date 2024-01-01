@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from io import BytesIO
 
-from hl1demo.utils import unpack_le
+from py_goldsrc_demo.utils import unpack_le
 
 
 @dataclass

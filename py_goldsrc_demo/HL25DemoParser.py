@@ -1,5 +1,5 @@
-from hl1demo.BaseDemoParser import BaseDemoParser
-from hl1demo.macros import BaseMacro
+from py_goldsrc_demo.BaseDemoParser import BaseDemoParser
+from py_goldsrc_demo.macros import BaseMacro
 
 
 class HL25DemoParser(BaseDemoParser):

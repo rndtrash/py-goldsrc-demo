@@ -1,11 +1,11 @@
 import os
 from io import BytesIO
 
-from hl1demo.BaseDemoParser import BaseDemoParser, DEMO_MAGIC
-from hl1demo.CS16DemoParser import CS16DemoParser
-from hl1demo.HL25DemoParser import HL25DemoParser
-from hl1demo.exceptions import InvalidMagicException, UnknownDemoFormat
-from hl1demo.utils import unpack_le, read_binary_string
+from py_goldsrc_demo.BaseDemoParser import BaseDemoParser, DEMO_MAGIC
+from py_goldsrc_demo.CS16DemoParser import CS16DemoParser
+from py_goldsrc_demo.HL25DemoParser import HL25DemoParser
+from py_goldsrc_demo.exceptions import InvalidMagicException, UnknownDemoFormat
+from py_goldsrc_demo.utils import unpack_le, read_binary_string
 
 DEMO_FORMAT_REGISTRY = {
     (5, 47, 'cstrike'): CS16DemoParser,
@@ -14,6 +14,7 @@ DEMO_FORMAT_REGISTRY = {
 
 
 def parse_demo(bs: BytesIO) -> BaseDemoParser:
+    """Call this function with a binary stream of your file to get a BaseDemoParser object"""
     bs.seek(0)
 
     magic = bs.read(len(DEMO_MAGIC))

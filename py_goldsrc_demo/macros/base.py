@@ -2,9 +2,9 @@ import os
 from dataclasses import dataclass
 from io import BytesIO
 
-from hl1demo.data_types import ClientData, NetMsg, Event, Sound
-from hl1demo.macros import BaseMacro
-from hl1demo.utils import unpack_le, read_binary_string
+from py_goldsrc_demo.data_types import ClientData, NetMsg, Event, Sound
+from py_goldsrc_demo.macros import BaseMacro
+from py_goldsrc_demo.utils import unpack_le, read_binary_string
 
 
 @dataclass

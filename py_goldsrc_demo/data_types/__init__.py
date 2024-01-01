@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 from io import BytesIO
 
-from hl1demo.exceptions import InvalidNetMsgLength
-from hl1demo.utils import unpack_le, unpack_be, read_binary_string
+from py_goldsrc_demo.exceptions import InvalidNetMsgLength
+from py_goldsrc_demo.utils import unpack_le, unpack_be, read_binary_string
 
 NET_MESSAGE_LENGTH_MIN = 0
 NET_MESSAGE_LENGTH_MAX = 65536

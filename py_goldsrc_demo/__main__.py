@@ -4,7 +4,7 @@ import os
 import argparse
 from io import BytesIO
 
-from hl1demo.parse_demo import parse_demo
+from py_goldsrc_demo.parse_demo import parse_demo
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
